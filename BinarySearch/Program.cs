@@ -11,25 +11,25 @@ namespace BinarySearch
     {
         static void Main(string[] args)
         {
-            int length = 500;
+            // generate sorted int array
+            int length = 1000000;
             int[] array = GetIntArray(length);
 
-            Console.WriteLine("Generating array..." + "\n");
-            Console.WriteLine(string.Join(", ", array));
+            Console.WriteLine($"Generating array with {length} values..." + "\n");
 
-            int value = array[250];
+            // get random value form array
+            Random rnd = new Random();
+            int value = array[rnd.Next(array.Length)];
 
-            Console.WriteLine($"Seraching for {value}");
+            Console.WriteLine($"Searching for {value}:" + "\n");
 
-            Stopwatch timer = new Stopwatch();
+            // binary search
+            Console.WriteLine(" --- Binary Search --- ");
+            TimeSearch(BinarySearch, array, value);
 
-            timer.Start();
-            int index = BinarySearch(array, value);
-            timer.Stop();
-
-
-            Console.WriteLine($"{timer.ElapsedMilliseconds} ms");
-            Console.WriteLine(index);
+            // normal search
+            Console.WriteLine(" --- Normal Search --- ");
+            TimeSearch(NormalSearch, array, value);
 
             Console.ReadLine();
         }
@@ -40,39 +40,70 @@ namespace BinarySearch
 
             int[] array = new int[length];
 
-            int lastNumber = 0;
+            int number = 0;
 
             for (int i = 0; i < length; i++)
             {
-                array[i] = lastNumber;
+                number += rnd.Next(1, 10);
 
-                lastNumber += rnd.Next(0, 10);
+                array[i] = number;
             }
 
             return array;
         }
 
+        private static void TimeSearch(Func<int[], int, int> SearchMethod, int[] array, int value)
+        {
+            Stopwatch timer = new Stopwatch();
+
+            timer.Start();
+            int index = SearchMethod(array, value);
+            timer.Stop();
+
+            // display time elapsed
+
+            Console.WriteLine($"Index found: {index}");
+
+            string microseconds = (timer.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L))).ToString("D4");
+            Console.WriteLine($"Time elapsed: {microseconds} microseconds" + "\n");
+        }
+
         private static int BinarySearch(int[] array, int value)
         {
-            int lastIndex = 0;
-            int boundaryStart = (int)array.Length/2;
-            int boundaryEnd = array.Length-1;
+            int middle;
 
-            while((boundaryEnd - boundaryStart) == 0)
+            int min = 0;
+            int max = array.Length - 1;
+
+            while(min <= max)
             {
-                if (array[lastIndex] == value)
+                middle = (min + max) / 2;
+
+                if (array[middle] == value)
                 {
-                    return lastIndex;
+                    return middle;
+
                 }
-                else if (array[lastIndex] > value)
+                else if (array[middle] > value)
                 {
-                    boundaryEnd = lastIndex;
-                    lastIndex = (int)(boundaryEnd - boundaryStart);
+                    max = middle-1;
                 }
                 else
                 {
-                    boundaryStart = lastIndex;
-                    lastIndex = (int)(boundaryEnd - boundaryStart);
+                    min = middle+1;
+                }
+            }
+
+            return -1;
+        }
+
+        private static int NormalSearch(int[] array, int value)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] == value)
+                {
+                    return i;
                 }
             }
 
