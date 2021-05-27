@@ -12,7 +12,7 @@ namespace BinarySearch
         static void Main(string[] args)
         {
             // generate sorted int array
-            int length = 1000000;
+            int length = 10000000;
             int[] array = GetIntArray(length);
 
             Console.WriteLine($"Generating array with {length} values..." + "\n");
